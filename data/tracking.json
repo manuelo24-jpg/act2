@@ -1,0 +1,9 @@
+[
+  {"id_pedido":7001, "ts":"2025-09-02T09:01:00Z", "evento":"out_for_delivery"},
+  {"id_pedido":7001, "ts":"2025-09-02T16:20:00Z", "evento":"delivered"},
+  {"id_pedido":7002, "ts":"2025-09-03T19:30:00Z", "evento":"delivered"},
+  {"id_pedido":7003, "ts":"2025-09-06T10:00:00Z", "evento":"delivered"},
+  {"id_pedido":7004, "ts":"2025-09-05T18:00:00Z", "evento":"delivery_failed"},
+  {"id_pedido":7004, "ts":"2025-09-06T11:15:00Z", "evento":"delivered"},
+  {"id_pedido":7005, "ts":"2025-09-07T08:30:00Z", "evento":"delivered"}
+]
