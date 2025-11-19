@@ -131,6 +131,80 @@ comparativa = (
         )
 )
 
+# ----------------------------------------
+#  COMPARATIVA SOLO POR TRANSPORTISTA
+# ----------------------------------------
+comparativa_transportista = (
+    pedidos_gold
+        .groupBy("transportista")
+        .agg(
+            count("*").alias("total_pedidos"),
+            round(avg("on_time") * 100, 2).alias("on_time_rate_percent"),
+            avg("retraso_horas_real").alias("retraso_horas_raw"),
+            avg("puerta_a_puerta_horas_real").alias("pta_puerta_horas_raw")
+        )
+        .withColumn("on_time_rate", concat(col("on_time_rate_percent"), lit("%")))
+        .withColumn("ret_dias", floor(col("retraso_horas_raw")/24))
+        .withColumn("ret_horas", floor(col("retraso_horas_raw")%24))
+        .withColumn("ret_min", floor((col("retraso_horas_raw")*60)%60))
+        .withColumn(
+            "retraso_promedio",
+            concat(col("ret_dias"), lit(" días "),
+                   col("ret_horas"), lit(" horas "),
+                   col("ret_min"), lit(" minutos"))
+        )
+        .withColumn("pta_dias", floor(col("pta_puerta_horas_raw")/24))
+        .withColumn("pta_horas", floor(col("pta_puerta_horas_raw")%24))
+        .withColumn("pta_min", floor((col("pta_puerta_horas_raw")*60)%60))
+        .withColumn(
+            "puerta_a_puerta_promedio",
+            concat(col("pta_dias"), lit(" días "),
+                   col("pta_horas"), lit(" horas "),
+                   col("pta_min"), lit(" minutos"))
+        )
+        .select(
+            "transportista", "total_pedidos",
+            "on_time_rate", "retraso_promedio", "puerta_a_puerta_promedio"
+        )
+)
+
+# ----------------------------------------
+#  COMPARATIVA SOLO POR PROVINCIA
+# ----------------------------------------
+comparativa_provincia = (
+    pedidos_gold
+        .groupBy("provincia")
+        .agg(
+            count("*").alias("total_pedidos"),
+            round(avg("on_time") * 100, 2).alias("on_time_rate_percent"),
+            avg("retraso_horas_real").alias("retraso_horas_raw"),
+            avg("puerta_a_puerta_horas_real").alias("pta_puerta_horas_raw")
+        )
+        .withColumn("on_time_rate", concat(col("on_time_rate_percent"), lit("%")))
+        .withColumn("ret_dias", floor(col("retraso_horas_raw")/24))
+        .withColumn("ret_horas", floor(col("retraso_horas_raw")%24))
+        .withColumn("ret_min", floor((col("retraso_horas_raw")*60)%60))
+        .withColumn(
+            "retraso_promedio",
+            concat(col("ret_dias"), lit(" días "),
+                   col("ret_horas"), lit(" horas "),
+                   col("ret_min"), lit(" minutos"))
+        )
+        .withColumn("pta_dias", floor(col("pta_puerta_horas_raw")/24))
+        .withColumn("pta_horas", floor(col("pta_puerta_horas_raw")%24))
+        .withColumn("pta_min", floor((col("pta_puerta_horas_raw")*60)%60))
+        .withColumn(
+            "puerta_a_puerta_promedio",
+            concat(col("pta_dias"), lit(" días "),
+                   col("pta_horas"), lit(" horas "),
+                   col("pta_min"), lit(" minutos"))
+        )
+        .select(
+            "provincia", "total_pedidos",
+            "on_time_rate", "retraso_promedio", "puerta_a_puerta_promedio"
+        )
+)
+
 print("----- ON TIME RATE ------")
 on_time_rate.show(truncate=False)
 
@@ -142,6 +216,12 @@ pta_puerta.show(truncate=False)
 
 print("----- COMPARATIVA ")
 comparativa.show(20, truncate=False)
+
+print("----- COMPARATIVA TRANSPORTISTA ------")
+comparativa_transportista.show(50, truncate=False)
+
+print("----- COMPARATIVA PROVINCIA ------")
+comparativa_provincia.show(50, truncate=False)
 
 pedidos_gold.write.mode("overwrite").parquet("gold/pedidos_gold")
 comparativa.write.mode("overwrite").parquet("gold/comparativa")
